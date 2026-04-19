@@ -26,7 +26,7 @@ function EditArticle() {
       modifiedArticle.articleId = state._id;
 
       let res = await axios.put(
-        "http://localhost:4000/author-api/articles", 
+        "https://capstone-project-bhy0.onrender.com/author-api/articles", 
         modifiedArticle, 
         { withCredentials: true }
       );

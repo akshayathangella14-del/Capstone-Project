@@ -34,22 +34,17 @@ function Login() {
   // console.log("current user",currentUser)
   
 
-  useEffect(()=>{
-    //navigate logic
-    if(isAuthenticated===true){
-      if(currentUser.role==="USER"){
-        navigate("/user-profile")
-      }
-      if(currentUser.role==="AUTHOR"){
-        navigate("/author-profile")
-      }
-      if(currentUser.role==="ADMIN"){
-        navigate("/admin-profile")
-      }
-
+useEffect(() => {
+  if (isAuthenticated && currentUser) {
+    if (currentUser.role === "USER") {
+      navigate("/user-profile");
+    } else if (currentUser.role === "AUTHOR") {
+      navigate("/author-profile");
+    } else if (currentUser.role === "ADMIN") {
+      navigate("/admin-profile");
     }
-
-  },[isAuthenticated])
+  }
+}, [isAuthenticated, currentUser]);
 
   console.log(isAuthenticated,currentUser)
 
@@ -65,7 +60,7 @@ function Login() {
         <h2 className={formTitle}>Sign In</h2>
 
         {/* API error */}
-        {/* {error && <p className={errorClass}>{error}</p>} */}
+        {error && <p className={errorClass}>{error}</p>}
 
         <form onSubmit={handleSubmit(onUserLogin)}>
           {/* Email */}
@@ -107,7 +102,7 @@ function Login() {
           </div>
 
           {/* Submit */}
-          <button type="submit" className={submitBtn}>
+          <button type="submit" className={submitBtn} disabled={loading}>
             Sign In
           </button>
         </form>

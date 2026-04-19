@@ -3,19 +3,25 @@ import RootLayout from "./components/RootLayout";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Login from "./components/Login";
+
 import UserProfile from "./components/UserProfile";
+
 import AuthorProfile from "./components/AuthorProfile";
 import AuthorArticles from "./components/AuthorArticles";
-import EditArticle from "./components/EditArticle";
 import WriteArticles from "./components/WriteArticles";
-import ArticleByID from "./components/ArticleByID";
-import Articles from "./components/Articles";
-import AuthorsList from "./components/AuthorsList";
-import { Toaster } from "react-hot-toast";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Unauthorized from "./components/Unauthorized";
+
 import AdminProfile from "./components/AdminProfile";
 import UsersList from "./components/UsersList";
+import AuthorsList from "./components/AuthorsList";
+import Articles from "./components/Articles";
+
+import EditArticle from "./components/EditArticle";
+import ArticleByID from "./components/ArticleByID";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import Unauthorized from "./components/Unauthorized";
+
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const routerObj = createBrowserRouter([
@@ -23,13 +29,13 @@ function App() {
       path: "/",
       element: <RootLayout />,
       children: [
-        // HOME
+        //  HOME
         {
           index: true,
           element: <Home />,
         },
 
-        // AUTH
+        //  AUTH
         {
           path: "register",
           element: <Register />,
@@ -39,7 +45,7 @@ function App() {
           element: <Login />,
         },
 
-        // PUBLIC
+        //  PUBLIC ROUTES
         {
           path: "articles",
           element: <Articles />,
@@ -49,7 +55,7 @@ function App() {
           element: <AuthorsList />,
         },
 
-        // USER
+        //  USER
         {
           path: "user-profile",
           element: (
@@ -59,7 +65,7 @@ function App() {
           ),
         },
 
-        // AUTHOR
+        //  AUTHOR
         {
           path: "author-profile",
           element: (
@@ -69,7 +75,7 @@ function App() {
           ),
           children: [
             {
-              index: true,
+              index: true, // default view
               element: <AuthorArticles />,
             },
             {
@@ -83,7 +89,7 @@ function App() {
           ],
         },
 
-        // ADMIN
+        //  ADMIN
         {
           path: "admin-profile",
           element: (
@@ -93,12 +99,16 @@ function App() {
           ),
           children: [
             {
-              path: "authors",
-              element: <AuthorsList />,
+              index: true, // ✅ IMPORTANT (default page)
+              element: <UsersList />, // default view
             },
             {
               path: "users",
               element: <UsersList />,
+            },
+            {
+              path: "authors",
+              element: <AuthorsList />,
             },
             {
               path: "articles",
@@ -107,7 +117,7 @@ function App() {
           ],
         },
 
-        // EDIT ARTICLE
+        //  EDIT ARTICLE
         {
           path: "edit-article/:id",
           element: (
@@ -117,13 +127,13 @@ function App() {
           ),
         },
 
-        // ARTICLE VIEW
+        //  ARTICLE VIEW
         {
           path: "article/:id",
           element: <ArticleByID />,
         },
 
-        // UNAUTHORIZED
+        //  UNAUTHORIZED
         {
           path: "unauthorized",
           element: <Unauthorized />,
@@ -133,10 +143,10 @@ function App() {
   ]);
 
   return (
-    <div>
+    <>
       <Toaster position="top-center" reverseOrder={false} />
       <RouterProvider router={routerObj} />
-    </div>
+    </>
   );
 }
 

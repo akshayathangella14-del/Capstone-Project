@@ -31,7 +31,7 @@ function AuthorArticles() {
         setLoading(true);
         try {
             // Calling the Author-specific API to get own articles
-            let res = await axios.get("http://localhost:4000/author-api/articles", { 
+            let res = await axios.get("https://capstone-project-bhy0.onrender.com/author-api/articles", { 
                 withCredentials: true 
             });
             if (res.status === 200) {
@@ -68,36 +68,50 @@ function AuthorArticles() {
   if (articles.length === 0) {
     return <div className={emptyStateClass}>You haven't published any articles yet.</div>;
   }
+return (
+  /* Changed to max 2 columns because the sidebar takes space */
+  <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 w-full">
+    {articles.map((article) => (
+      <div 
+        key={article._id} 
+        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md transition-shadow duration-300 min-h-[250px]"
+      >
+        <div>
+          <div className="flex justify-between items-start mb-4">
+            <span className="bg-indigo-50 text-indigo-600 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+              {article.category}
+            </span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+              article.isArticleActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            }`}>
+              {article.isArticleActive ? "ACTIVE" : "DELETED"}
+            </span>
+          </div>
 
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-     {articles.map((article) => (
-    <div key={article._id} className={`${articleCardClass} relative flex flex-col`}>
-        {/* Status Badge */}
-        <span className={article.isArticleActive ? articleStatusActive : articleStatusDeleted}>
-            {article.isArticleActive ? "ACTIVE" : "DELETED"}
-        </span>
-        
-        <h3 className={articleTitle}>{article.title}</h3>
-        <p className={articleExcerpt}>{article.content.substring(0, 100)}...</p>
-        
-        <div className="mt-auto">
-            <div className={articleMeta}>
-                <span>{article.category}</span>
-                <span>{formatDate(article.updatedAt)}</span>
-            </div>
-            {/* Button to navigate to ArticleByID */}
-            <button 
-                onClick={() => openArticle(article)} 
-                className={`${ghostBtn} w-full mt-4`}
-            >
-                View Article
-            </button>
+          <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-2">
+            {article.title}
+          </h3>
+          
+          <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-3">
+            {article.content.substring(0, 120)}...
+          </p>
         </div>
-    </div>
-))}
-    </div>
-  );
+
+        <div className="mt-4 pt-4 border-t border-gray-50 flex items-center justify-between">
+          <span className="text-xs text-gray-400 font-medium">
+            {formatDate(article.updatedAt)}
+          </span>
+          <button 
+            onClick={() => openArticle(article)} 
+            className="text-indigo-600 font-semibold text-sm hover:text-indigo-800 transition-colors"
+          >
+            Read More →
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+);
 }
 
 export default AuthorArticles;

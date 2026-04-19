@@ -40,7 +40,7 @@ const submitArticle = async (articleObj) => {
 
     // 2. Make the POST request to the Author API
     let res = await axios.post(
-      "http://localhost:4000/author-api/articles", 
+      "https://capstone-project-bhy0.onrender.com/author-api/articles", 
       articleObj, 
       { withCredentials: true }
     );

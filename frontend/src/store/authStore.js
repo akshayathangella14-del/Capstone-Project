@@ -7,37 +7,44 @@ export const useAuth = create((set) => ({
   isAuthenticated: false,
   error: null,
   login: async (userCred) => {
-    // const { role, ...userCredObj } = userCredWithRole;
-    try {
-      //set loading true
-      set({ loading: true, currentUser: null, isAuthenticated: false, error: null });
-      //make api call
-      let res = await axios.post("http://localhost:4000/auth/login", userCred, { withCredentials: true });
-      //update state
-      if (res.status === 200) {
-        set({
-          currentUser: res.data?.payload,
-          loading: false,
-          isAuthenticated: true,
-          error: null,
-        });
-      }
-    } catch (err) {
-      console.log("err is ", err);
+  try {
+    set({
+      loading: true,
+      currentUser: null,
+      isAuthenticated: false,
+      error: null,
+    });
+
+    let res = await axios.post(
+      "https://capstone-project-bhy0.onrender.com/auth/login",
+      userCred,
+      { withCredentials: true }
+    );
+
+    if (res.status === 200) {
       set({
+        currentUser: res.data?.payload,
         loading: false,
-        isAuthenticated: false,
-        currentUser: null,
-        //error: err,
-        error: err.response?.data?.error || "Login failed",
+        isAuthenticated: true,
+        error: null,
       });
     }
-  },
+  } catch (err) {
+    console.log("err is ", err.response);
+
+    set({
+      loading: false,
+      isAuthenticated: false,
+      currentUser: null,
+      error: err.response?.data?.message || "Login failed", // ✅ FIXED
+    });
+  }
+},
   logout: async () => {
     try {
       //set loading state
       //make logout api req
-      let res = await axios.get("http://localhost:4000/auth/logout", { withCredentials: true });
+      let res = await axios.get("https://capstone-project-bhy0.onrender.com/auth/logout", { withCredentials: true });
       //update state
       if (res.status === 200) {
         set({
@@ -60,7 +67,7 @@ export const useAuth = create((set) => ({
   checkAuth: async () => {
     try {
       set({ loading: true });
-      const res = await axios.get("http://localhost:4000/auth/check-auth", { withCredentials: true });
+      const res = await axios.get("https://capstone-project-bhy0.onrender.com/auth/check-auth", { withCredentials: true });
 
       set({
         currentUser: res.data.payload,

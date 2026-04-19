@@ -24,7 +24,7 @@ function AuthorsList() {
       setLoading(true);
 
       const res = await axios.get(
-        "http://localhost:4000/admin-api/authors",
+        "https://capstone-project-bhy0.onrender.com/admin-api/authors",
         { withCredentials: true }
       );
 

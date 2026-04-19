@@ -48,7 +48,7 @@ const onUserRegister = async (userObj) => {
     setLoading(true);
 
     let res = await axios.post(
-      "http://localhost:4000/auth/users",
+      "https://capstone-project-bhy0.onrender.com/auth/users",
       formData,
       { withCredentials: true }
     );

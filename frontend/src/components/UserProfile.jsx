@@ -20,7 +20,7 @@ function UserProfile() {
     const getArticles = async () => {
       setLoading(true);
       try {
-        let res = await axios.get("http://localhost:4000/user-api/articles", { withCredentials: true });
+        let res = await axios.get("https://capstone-project-bhy0.onrender.com/user-api/articles", { withCredentials: true });
         if (res.status === 200) {
           setArticles(res.data.payload);
         }
@@ -49,14 +49,25 @@ function UserProfile() {
       {/* Profile Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[#0066cc]/10 text-[#0066cc] flex items-center justify-center text-2xl font-bold">
-            {currentUser?.firstName?.charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold">Welcome, {currentUser?.firstName}!</h1>
-            <p className="text-gray-500">Explore the latest articles</p>
-          </div>
-        </div>
+  {currentUser?.profileImageUrl ? (
+    <img
+      src={currentUser.profileImageUrl}
+      alt="profile"
+      className="w-16 h-16 rounded-full object-cover border"
+    />
+  ) : (
+    <div className="w-16 h-16 rounded-full bg-[#0066cc]/10 text-[#0066cc] flex items-center justify-center text-2xl font-bold">
+      {currentUser?.firstName?.charAt(0).toUpperCase()}
+    </div>
+  )}
+
+  <div>
+    <h1 className="text-2xl font-bold">
+      Welcome, {currentUser?.firstName}!
+    </h1>
+    <p className="text-gray-500">Explore the latest articles</p>
+  </div>
+</div>
         <button onClick={onLogout} className="text-red-600 font-medium hover:underline">Logout</button>
       </div>
 
