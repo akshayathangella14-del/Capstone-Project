@@ -13,7 +13,7 @@ const app = exp()
 app.use(cors({
     origin: 'https://capstone-project-nine-jet.vercel.app', // Your specific Vercel URL
     credentials: true, // This allows cookies/headers to pass through
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE","PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 

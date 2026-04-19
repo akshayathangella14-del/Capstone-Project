@@ -5,7 +5,7 @@ import { UserModel } from "../models/UserModel.js";
 export const adminApp = exp.Router();
 
 
-// ✅ GET ALL USERS & AUTHORS
+// GET ALL USERS & AUTHORS
 adminApp.get("/users", verifyToken("ADMIN"), async (req, res) => {
   try {
     const usersList = await UserModel.find({
