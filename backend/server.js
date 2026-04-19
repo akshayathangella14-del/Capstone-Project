@@ -10,10 +10,7 @@ import cors from 'cors'
 
 config()
 const app = exp()
-app.use(cors({
-    origin:['http://localhost:5173'],
-    credentials:true
-}))
+app.use(cors());
 
 //body parser middleware
 app.use(exp.json())
