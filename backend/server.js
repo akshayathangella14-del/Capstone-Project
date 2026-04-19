@@ -10,7 +10,12 @@ import cors from 'cors'
 
 config()
 const app = exp()
-app.use(cors());
+app.use(cors({
+    origin: 'https://capstone-project-nine-jet.vercel.app', // Your specific Vercel URL
+    credentials: true, // This allows cookies/headers to pass through
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 //body parser middleware
 app.use(exp.json())
