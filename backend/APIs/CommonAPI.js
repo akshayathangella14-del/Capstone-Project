@@ -43,25 +43,46 @@ commonApp.post("/users", upload.single("profileImageUrl"), async (req, res, next
 
 // Route for Login
 commonApp.post("/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await UserModel.findOne({ email });
-        
-        if (!user || !(await compare(password, user.password))) {
-            return res.status(401).json({ message: "Invalid email or password" });
-        }
+  try {
+    const { email, password } = req.body;
 
-        const token = sign(
-            { id: user._id, email: user.email, role: user.role },
-            process.env.SECRET_KEY,
-            { expiresIn: '1d' }
-        );
+    const user = await UserModel.findOne({ email });
 
-        res.cookie("token", token, { httpOnly: true, secure: false, sameSite: "lax" });
-        res.status(200).json({ message: "Login successful", payload: user });
-    } catch (err) {
-        res.status(500).json({ message: "error", error: err.message });
+    //  invalid credentials
+    if (!user || !(await compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
+
+    //  BLOCKED USER CHECK (NEW 🔥)
+    if (!user.isUserActive) {
+      return res.status(403).json({
+        message: "Your account is blocked by admin",
+      });
+    }
+
+    const token = sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.SECRET_KEY,
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+
+    res.status(200).json({
+      message: "Login successful",
+      payload: user,
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "error",
+      error: err.message,
+    });
+  }
 });
 
 // Route for Logout

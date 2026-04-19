@@ -1,31 +1,47 @@
-import jwt from 'jsonwebtoken'
-const { verify } = jwt
-import { config } from 'dotenv'
-config()
+import jwt from "jsonwebtoken";
+import { config } from "dotenv";
+import { UserModel } from "../models/UserModel.js";
 
+const { verify } = jwt;
+config();
 
 export const verifyToken = (...allowedRoles) => {
-    return (req, res, next) => {
-        try {
-            //get token from cookie
-            const token = req.cookies?.token
-            //check token existed or not
-            if (!token) {
-                return res.status(401).json({ message: "Please login" })
-            }
-            //validate token(decode the token)
-            let decodedToken = verify(token, process.env.SECRET_KEY)
-            //check the role is same as role in decodedToken
-            if (!allowedRoles.includes(decodedToken.role)) {
-                return res.status(403).json({ message: "You are not authorised" })
-            }
-            //add decoded token
-            req.user = decodedToken
-            //call next
-            next()
-        } catch (err) {
-            res.status(401).json({ message: "Invalid token" })
-        }
-    }
+  return async (req, res, next) => {
+    try {
+      const token = req.cookies?.token;
 
-}
+      if (!token) {
+        return res.status(401).json({ message: "Please login" });
+      }
+
+      const decodedToken = verify(token, process.env.SECRET_KEY);
+
+      // ✅ FETCH USER FROM DB
+      const user = await UserModel.findById(decodedToken.id);
+
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // 🚨 BLOCK CHECK
+      if (!user.isUserActive) {
+        return res.status(403).json({
+          message: "Your account is blocked. Contact admin.",
+        });
+      }
+
+      // ROLE CHECK
+      if (!allowedRoles.includes(decodedToken.role)) {
+        return res.status(403).json({
+          message: "You are not authorised",
+        });
+      }
+
+      req.user = decodedToken;
+      next();
+
+    } catch (err) {
+      res.status(401).json({ message: "Invalid token" });
+    }
+  };
+};

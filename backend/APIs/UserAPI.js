@@ -1,18 +1,23 @@
-import exp from 'express'
-import { verifyToken } from "../middlewares/VerifyToken.js"
-import { ArticleModel } from '../models/ArticleModel.js'
-export const userApp = exp.Router()
+import exp from 'express';
+import { verifyToken } from "../middlewares/VerifyToken.js";
+import { ArticleModel } from '../models/ArticleModel.js';
 
-// Read articles of all authors
+export const userApp = exp.Router();
+
+
+// READ ALL ACTIVE ARTICLES
 userApp.get("/articles", async (req, res) => {
     try {
-        const articlesList = await ArticleModel.find({ isArticleActive: true })
-            .populate("author", "firstName lastName profileImageUrl");
+        const articlesList = await ArticleModel.find({
+            isArticleActive: true
+        })
+        .populate("author", "firstName lastName profileImageUrl");
 
         res.status(200).json({
-            message: "articles",
+            message: "Articles fetched successfully",
             payload: articlesList
         });
+
     } catch (err) {
         res.status(500).json({
             message: "Error fetching articles",
@@ -21,36 +26,74 @@ userApp.get("/articles", async (req, res) => {
     }
 });
 
-// Add comment to an article
+
+// ADD COMMENT TO ARTICLE
 userApp.put("/articles", verifyToken("USER"), async (req, res) => {
-    const { articleId, comment } = req.body
-    const articleDocument = await ArticleModel.findOne({ _id: articleId, isArticleActive: true });
-    
-    if (!articleDocument) {
-        return res.status(404).json({ message: "Article not found" })
+    try {
+        const { articleId, comment } = req.body;
+
+        const articleDocument = await ArticleModel.findOne({
+            _id: articleId,
+            isArticleActive: true
+        });
+
+        if (!articleDocument) {
+            return res.status(404).json({
+                message: "Article not found"
+            });
+        }
+
+        const userId = req.user?.id;
+
+        articleDocument.comments.push({
+            user: userId,
+            comment: comment
+        });
+
+        await articleDocument.save();
+
+        const updatedArticle = await ArticleModel.findById(articleId)
+            .populate("author", "firstName lastName profileImageUrl")
+            .populate("comments.user", "firstName lastName profileImageUrl");
+
+        res.status(200).json({
+            message: "Comment added successfully",
+            payload: updatedArticle
+        });
+
+    } catch (err) {
+        res.status(500).json({
+            message: "Error adding comment",
+            error: err.message
+        });
     }
+});
 
-    const userId = req.user?.id
-    // Add comment to comments array
-    articleDocument.comments.push({ user: userId, comment: comment })
-    await articleDocument.save()
-    
-    // Return populated document so frontend gets user details for the new comment
-    const updatedArticle = await ArticleModel.findById(articleId).populate("comments.user", "firstName lastName profileImageUrl");
-    res.status(200).json({ message: "Comment added successfully", payload: updatedArticle })
-})
 
-// Get article by ID
+// GET SINGLE ARTICLE BY ID
 userApp.get("/article/:id", verifyToken("USER", "AUTHOR"), async (req, res) => {
     try {
         const articleId = req.params.id;
-        const article = await ArticleModel.findById(articleId).populate("comments.user", "firstName lastName profileImageUrl");
-        
+
+        const article = await ArticleModel.findById(articleId)
+            .populate("author", "firstName lastName profileImageUrl")
+            .populate("comments.user", "firstName lastName profileImageUrl");
+
         if (!article) {
-            return res.status(404).json({ message: "Article not found" });
+            return res.status(404).json({
+                message: "Article not found"
+            });
         }
-        res.status(200).json({ message: "Article found", payload: article });
+
+        res.status(200).json({
+            message: "Article found",
+            payload: article
+        });
+
     } catch (err) {
-        res.status(500).json({ message: "error", error: err.message });
+        res.status(500).json({
+            message: "Error fetching article",
+            error: err.message
+        });
     }
 });
