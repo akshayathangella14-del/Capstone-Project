@@ -31,21 +31,28 @@ function WriteArticles() {
 const submitArticle = async (articleObj) => {
   setLoading(true);
   try {
-    // 1. Ensure the author ID is attached to the article object from the global state
     if (!currentUser?._id) {
       console.log("User not logged in");
       return;
     }
+    
+    // 1. Get the token from storage (check if you store it in localStorage or your authStore)
+    const token = localStorage.getItem("token"); 
+
     articleObj.author = currentUser._id;
 
-    // 2. Make the POST request to the Author API
+    // 2. Add the Authorization Header
     let res = await axios.post(
       "https://capstone-project-bhy0.onrender.com/author-api/articles", 
       articleObj, 
-      { withCredentials: true }
+      { 
+        headers: {
+          Authorization: `Bearer ${token}` // THIS IS THE KEY FIX
+        },
+        withCredentials: true 
+      }
     );
 
-    // 3. Navigate back to the author's articles list on success
     if (res.status === 201) {
       navigate("/author-profile/articles");
     }
