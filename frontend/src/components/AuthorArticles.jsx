@@ -26,14 +26,21 @@ function AuthorArticles() {
 
   console.log("user in author profile",user)
   
- useEffect(() => {
+useEffect(() => {
     const getAuthorArticles = async () => {
         setLoading(true);
         try {
-            // Calling the Author-specific API to get own articles
+            // 1. Get token
+            const token = localStorage.getItem("token");
+
+            // 2. Add headers to the GET request
             let res = await axios.get("https://capstone-project-bhy0.onrender.com/author-api/articles", { 
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
                 withCredentials: true 
             });
+            
             if (res.status === 200) {
                 setArticles(res.data.payload);
             }
