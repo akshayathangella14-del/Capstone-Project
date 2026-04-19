@@ -27,9 +27,17 @@ function Articles() {
   const fetchArticles = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("https://capstone-project-bhy0.onrender.com/user-api/articles");
+      // Get the token from wherever you store it
+      const token = localStorage.getItem("token"); 
+
+      const res = await axios.get("https://capstone-project-bhy0.onrender.com/user-api/articles", {
+        headers: {
+          Authorization: token ? `Bearer ${token}` : ""
+        }
+      });
       setArticles(res.data.payload || []);
     } catch (err) {
+      console.error("Fetch error:", err);
       setError("Failed to load articles");
     } finally {
       setLoading(false);
