@@ -81,7 +81,7 @@ function ArticleByID() {
   const toggleArticleStatus = async () => {
     try {
       const res = await axios.patch(
-        "http://localhost:4000/author-api/articles",
+        "https://capstone-project-bhy0.onrender.com/author-api/articles",
         {
           articleId: article._id,
           isArticleActive: !article.isArticleActive,
