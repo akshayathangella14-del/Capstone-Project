@@ -45,19 +45,14 @@ commonApp.post("/users", upload.single("profileImageUrl"), async (req, res, next
 commonApp.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await UserModel.findOne({ email });
 
-    //  invalid credentials
     if (!user || !(await compare(password, user.password))) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    //  BLOCKED USER CHECK (NEW 🔥)
     if (!user.isUserActive) {
-      return res.status(403).json({
-        message: "Your account is blocked by admin",
-      });
+      return res.status(403).json({ message: "Your account is blocked by admin" });
     }
 
     const token = sign(
@@ -66,22 +61,22 @@ commonApp.post("/login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
+    // Keep the cookie for local/same-domain testing
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true, // Set to true for Production (Render)
+      sameSite: "none", // Required for cross-site (Vercel to Render)
     });
 
+    //  Send the token in the JSON response
     res.status(200).json({
       message: "Login successful",
+      token: token, // This is what the frontend needs!
       payload: user,
     });
 
   } catch (err) {
-    res.status(500).json({
-      message: "error",
-      error: err.message,
-    });
+    res.status(500).json({ message: "error", error: err.message });
   }
 });
 
